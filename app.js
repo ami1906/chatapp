@@ -71,8 +71,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
+http.listen(process.env.PORT || 3000,function(){
+  console.log('listening on *:3000*');
 });
 
 // catch 404 and forward to error handler
