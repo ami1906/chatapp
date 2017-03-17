@@ -70,8 +70,7 @@
         window.toEmail = data.fromUser;
         window.openChat = true;
         window.openChatMessage = data.msg;
-        window.open("/private", "_blank", "width=400,height=600");
-        //socket.emit('privateMessage', {msg:message,toUser:toEmail,fromUser:fromEmail});
+        $('#triggerWindow').trigger('click');
       });
        window.fromEmail = prompt("Please enter your email", "Enter Your Email Address");
        if(!fromEmail)
