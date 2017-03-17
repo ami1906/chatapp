@@ -78,7 +78,7 @@ app.use('/users', users);
 var port = process.env.PORT || 3000;
 http.listen(port, function(){
   console.log('listening on *:'+port);
-}
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
