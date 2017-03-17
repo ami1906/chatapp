@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title>ChatApp</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
@@ -70,10 +70,12 @@
         window.toEmail = data.fromUser;
         window.openChat = true;
         window.openChatMessage = data.msg;
-        window.open("/private", "Private Chat", "width=400,height=600");
+        window.open("/private", "_blank", "width=400,height=600");
         //socket.emit('privateMessage', {msg:message,toUser:toEmail,fromUser:fromEmail});
       });
        window.fromEmail = prompt("Please enter your email", "Enter Your Email Address");
+       if(!fromEmail)
+         location.reload();
        socket.emit('connectionInitiation', {email: fromEmail});
        //window.toEmail = prompt("Please to email", "Enter other Email Address");
       $('form').submit(function(){
@@ -94,6 +96,10 @@
         }
       });
 
+      $('body').on('click','#triggerWindow',function(){
+         window.open("/private", "_blank", "width=400,height=600");
+      });
+
     });
 	</script>
     <div class="container">
@@ -107,6 +113,7 @@
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
+    <button id="triggerWindow" style="disploy:none"/>
   </body>
 </html>
 
