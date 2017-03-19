@@ -16,6 +16,10 @@
         width:100%;
         float: left;
       }
+      .private_title{
+        font-style: italic;
+        text-align:center;
+      }
     </style>
   </head>
   <body>
@@ -30,17 +34,11 @@
       window.toEmail = window.opener.toEmail;
       document.title = toEmail;
       if(msg)
-        $('#messages').append($('<li>').text(toEmail+': '+msg));
-       //socket.emit('connectionInitiation', {email: fromEmail});
-      
+        $('#messages').append($('<li>').text(toEmail+': '+msg));    
       $('form').submit(function(){
         var message = $('#m').val();
-        if(!openChat)
-        {
-          socket.emit('openChat',{msg:message,toUser:toEmail,fromUser:fromEmail});
-          openChat = true;
-        }
-        socket.emit('privateMessage', {msg:message,toUser:toEmail,fromUser:fromEmail});
+        socket.emit('privateMessage', {msg:message,toUser:toEmail,fromUser:fromEmail,openChat:openChat});
+        if(!openChat) openChat = true;
         $('#messages').append($('<li>').text("You : "+message));
         $('#m').val('');
         return false;
@@ -51,6 +49,7 @@
     });
 	</script>
     <div class="message_window">
+    <div class="private_title"> Welcome to Private Chat </div>
     <ul id="messages"></ul>
     </div>
     <form action="">

@@ -54,7 +54,7 @@
 	<script>
     $(function () {
       socket = io();
-      socket.on('chatMessage', function(data){
+      socket.on('publicMessage', function(data){
         $('#messages').append($('<li>').text(data.fromUser+': '+data.msg));
       });
       socket.on('chatStatus', function(msg){
@@ -72,11 +72,10 @@
         window.openChatMessage = data.msg;
         $('#triggerWindow').trigger('click');
       });
-       window.fromEmail = prompt("Please enter your email", "Enter Your Email Address");
-       if(!fromEmail)
-         location.reload();
-       socket.emit('connectionInitiation', {email: fromEmail});
-       //window.toEmail = prompt("Please to email", "Enter other Email Address");
+      window.fromEmail = prompt("Please enter your email", "Enter Your Email Address");
+      if(!fromEmail)
+        location.reload();
+      socket.emit('initiateConnection', {email: fromEmail});
       $('form').submit(function(){
         var message = $('#m').val();
         $('#messages').append($('<li>').text(fromEmail+": "+message));
@@ -87,7 +86,6 @@
 
       $('body').on('click','#users li',function(){
         var email = $(this).text();
-        console.log("clicked:"+email);
         if(fromEmail !== email)
         {
           window.toEmail = email;

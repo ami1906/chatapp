@@ -14,11 +14,14 @@ var io = require('socket.io')(http);
 var mapper = {};
 io.on('connection', function(socket){
   var email = null;
+  
+  // trigger when user sends a message to chat room
   socket.on('sendToAll', function(data){
-    socket.broadcast.to('public').emit('chatMessage',data);
+    socket.broadcast.to('public').emit('publicMessage',data);
   });
 
   console.log('a user connected:'+ socket.id);
+  // trigger when user disconnects
   socket.on('disconnect', function(){
     if(email)
     {
@@ -27,35 +30,31 @@ io.on('connection', function(socket){
       delete mapper[email];
     }
   });
-  socket.on('chatMessage', function(data){
-    mapper[data.toUser].emit('chatMessage',data);
-    console.log('message:'+ data.msg);
-  });
+  // trigger when private mesage is sent
   socket.on('privateMessage', function(data){
-      mapper[data.toUser].emit('privateMessage',data);
-      console.log('from '+ data.fromUser+'to '+ data.toUser + ': '+data.msg);
+      var emitTo = 'privateMessage';
+      if(!data.openChat) emitTo = 'openChat';     
+      mapper[data.toUser].emit(emitTo,data);
+      console.log('emitTo:'+ emitTo+', from '+ data.fromUser+'to '+ data.toUser + ': '+data.msg);
   });
-  socket.on('openChat', function(data){
-    mapper[data.toUser].emit('openChat',data);
-    console.log('openChat message:'+ data.msg);
-  });
-  socket.on('chatToAll', function(data){
-    mapper[data.toUser].emit('chatMessage',data);
-    console.log('message:'+ data.msg);
-  });
-  socket.on('connectionInitiation', function (user) {
-      console.log('User Joined with email:' + user.email+' and id:'+socket.id);
-      mapper[user.email] = socket;
-      email = user.email;
-      socket.join('public',function(){
-        socket.broadcast.to('public').emit('chatStatus',user.email+' has joined the room');
-        socket.emit('chatStatus',user.email+' has joined the room');
-        socket.broadcast.to('public').emit('listUsers',Object.keys(mapper));
-        socket.emit('listUsers',Object.keys(mapper));
-      });
-      
+  // trigger when user joins the public chat room
+  socket.on('initiateConnection', function (user) {
+    console.log('User Joined with email:' + user.email+' and id:'+socket.id);
+    mapper[user.email] = socket;
+    email = user.email;
+    socket.join('public',function(){
+      emitToRoom(socket,'public','chatStatus',user.email+' has joined the room');
+      emitToRoom(socket,'public','listUsers',Object.keys(mapper));
+    });   
   });
 });
+
+function emitToRoom(socket,room,emitFunc,message)
+{
+  socket.broadcast.to(room).emit(emitFunc,message);
+  socket.emit(emitFunc,message);
+}
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
